@@ -14,7 +14,7 @@ namespace UserdataManagement.Services
             _configuration = configuration;
         }
 
-        public void SendMail(string email, string subject, string body, string? attachment = null)
+        public void SendMail(string email, string subject, string body, string? attachment = null, string? cc = null, string? bcc = null)
         {
             var emailSettings = _configuration.GetSection("EmailSettings");
             string smtpServer = emailSettings["Server"];
@@ -54,6 +54,17 @@ namespace UserdataManagement.Services
                         Body = htmlTemplate
                     };
                     mailMessage.To.Add(email);
+
+                    // Add CC and BCC if provided
+                    if (!string.IsNullOrEmpty(cc))
+                    {
+                        mailMessage.CC.Add(cc);
+                    }
+
+                    if (!string.IsNullOrEmpty(bcc))
+                    {
+                        mailMessage.Bcc.Add(bcc);
+                    }
 
                     // Add attachment if provided
                     if (!string.IsNullOrEmpty(attachment) && File.Exists(attachment))

@@ -218,7 +218,7 @@ namespace UserdataManagement.Controllers
         {
             try
             {
-                _mailService.SendMail(request.Email, request.Subject, request.Body, request.Attachment);
+                _mailService.SendMail(request.Email, request.Subject, request.Body, request.Attachment, request.Cc, request.Bcc);
                 return Ok("Email sent successfully!");
             }
             catch (Exception ex)

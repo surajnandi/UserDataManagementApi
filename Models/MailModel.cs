@@ -6,5 +6,7 @@
         public string Subject { get; set; }
         public string Body { get; set; }
         public string? Attachment { get; set; } // Optional
+        public string? Cc { get; set; } // Optional
+        public string? Bcc { get; set; } // Optional
     }
 }

