@@ -106,5 +106,30 @@ namespace UserdataManagement.Repositories
         }
 
 
+        public async Task AddUserToken(TokenModel userToken)
+        {
+            _context.Tokens.Add(userToken);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<TokenModel> GetUserToken(string token)
+        {
+            return await _context.Tokens
+                .FirstOrDefaultAsync(t => t.Token == token);
+        }
+
+        public async Task UpdateUserToken(TokenModel userToken)
+        {
+            _context.Tokens.Update(userToken);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<TokenModel> LoginByToken(string token)
+        {
+            return await _context.Tokens
+                .FirstOrDefaultAsync(t => t.Token == token && t.IsActive == true);
+        }
+
+
     }
 }

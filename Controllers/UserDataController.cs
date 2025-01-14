@@ -204,7 +204,8 @@ namespace UserdataManagement.Controllers
                 return BadRequest("Token is required.");
             }
 
-            var isValid = await _userService.ValidateLoginTokenAsync(token);
+            //var isValid = await _userService.ValidateLoginTokenAsync(token);
+            var isValid = await _userService.VerifyLoginToken(token);
             if (isValid)
             {
                 return Ok("Login successfull!");
@@ -298,6 +299,86 @@ namespace UserdataManagement.Controllers
 
         }
 
+
+        #region Passwordless Login
+
+        [HttpPost("PasswordLessLogin")]
+        public async Task<IActionResult> SendToken([FromQuery] string email)
+        {
+            try
+            {
+                // Validate email input directly
+                if (string.IsNullOrWhiteSpace(email))
+                    return BadRequest("Email address cannot be empty.");
+
+                try
+                {
+                    var addr = new System.Net.Mail.MailAddress(email);
+                    if (addr.Address != email)
+                        return BadRequest("Invalid email address.");
+                }
+                catch
+                {
+                    return BadRequest("Invalid email address.");
+                }
+
+                await _userService.SendLoginToken(email);
+                return Ok("Token sent to your email.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("VerifyToken")]
+        public async Task<IActionResult> VerifyToken([FromQuery] string token)
+        {
+            try
+            {
+                // Validate token input
+                if (string.IsNullOrWhiteSpace(token))
+                    return BadRequest("Token cannot be empty.");
+
+                var result = await _userService.VerifyLoginToken(token);
+
+                if (!result)
+                    return Unauthorized("Invalid or expired token.");
+
+                return Ok("Token verified.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("LoginUser")]
+        public async Task<IActionResult> LoginByToken([FromQuery] string token)
+        {
+            try
+            {
+                // Validate token input
+                if (string.IsNullOrWhiteSpace(token))
+                    return BadRequest("Token cannot be empty.");
+
+                var user = await _userService.LoginByToken(token);
+
+                if (user == null)
+                    return Unauthorized("Invalid or expired token.");
+
+                return Ok(new { Message = "You are logged in.", User = user });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        #endregion
 
 
     }

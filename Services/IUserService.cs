@@ -17,5 +17,9 @@ namespace UserdataManagement.Services
         Task<UserDataModel> LoginUser(UserLoginModel loginRequest);
         Task<string> GenerateLoginTokenAsync(string email);
         Task<bool> ValidateLoginTokenAsync(string token);
+
+        Task SendLoginToken(string email);
+        Task<bool> VerifyLoginToken(string token);
+        Task<TokenModel> LoginByToken(string token);
     }
 }

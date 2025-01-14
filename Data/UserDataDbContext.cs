@@ -10,12 +10,14 @@ namespace UserdataManagement.Data
 
         public DbSet<UserDataModel> UserData { get; set; }
         public DbSet<VisitorModel> Visitors { get; set; }
+        public DbSet<TokenModel> Tokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Specify the table name for UserDataModel
             modelBuilder.Entity<UserDataModel>().ToTable("userdata");
             modelBuilder.Entity<VisitorModel>().ToTable("visitors");
+            modelBuilder.Entity<TokenModel>().ToTable("usertokens");
         }
     }
 }

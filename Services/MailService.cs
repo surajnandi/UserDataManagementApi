@@ -30,7 +30,8 @@ namespace UserdataManagement.Services
                 //string base64Image = Convert.ToBase64String(imageBytes); // Convert to base64 string
 
                 // Read the HTML template
-                var htmlTemplate = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Files", "mail.html"));
+                //var htmlTemplate = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Files", "mail.html"));
+                var htmlTemplate = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Files", "usermail.html"));
 
                 // Replace logo placeholder with base64 image string
                 //htmlTemplate = htmlTemplate.Replace("logo.png", $"data:image/png;base64,{base64Image}");

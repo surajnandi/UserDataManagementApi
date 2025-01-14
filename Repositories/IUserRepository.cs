@@ -15,5 +15,11 @@ namespace UserdataManagement.Repositories
         bool IsPhoneNumberExists(string phone);
         Task DeactivateUsers(IEnumerable<int> userIds);
         Task<UserDataModel> LoginUser(string emailOrUsername, string password);
+
+
+        Task AddUserToken(TokenModel userToken);
+        Task<TokenModel> GetUserToken(string token);
+        Task UpdateUserToken(TokenModel userToken);
+        Task<TokenModel> LoginByToken(string token);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.Data;
+﻿using iText.Commons.Actions.Contexts;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using UserdataManagement.Models;
@@ -105,7 +106,7 @@ namespace UserdataManagement.Services
                        $"This is an automated message. Please do not reply to this email.<br/><br/><br/>" +
                        $"Thanks!";
 
-             _mailService.SendMail(email, subject, body,bcc:"surajnandi1@gmail.com");
+             _mailService.SendMail(email, subject, body, bcc:"");
 
             return token;
         }
@@ -119,5 +120,65 @@ namespace UserdataManagement.Services
                 u.LoginToken.Equals(token, StringComparison.OrdinalIgnoreCase)
                 && u.TokenExpiration > currentTime);
         }
+
+
+        public async Task SendLoginToken(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Email is required.");
+
+            // Generate token and expiration time
+            //var token = Guid.NewGuid().ToString();
+            // Generate a longer token by concatenating multiple GUIDs
+            var token = $"{Guid.NewGuid()}-{Guid.NewGuid()}-{Guid.NewGuid()}";
+
+            var expirationTime = DateTime.Now.AddMinutes(10);
+
+            // Create and save token to the database
+            var userToken = new TokenModel
+            {
+                Email = email,
+                Token = token,
+                ExpirationTime = expirationTime,
+                CreatedAt = DateTime.Now,
+                IsActive = false
+            };
+
+            await _userRepository.AddUserToken(userToken);
+
+            var request = _httpContextAccessor.HttpContext.Request;
+            var validationLink = $"{request.Scheme}://{request.Host}/api/UserData/VerifyToken?token={token}";
+
+            var subject = "Verify email address!";
+            var body = $"Please verify your email address.<br/><br/>" +
+                       $"Use the following link to confirm your email address: <a href='{validationLink}'>Confirm Email</a><br/><br/>" +
+                       $"This token is valid for 10 minutes.<br/><br/>" +
+                       $"This is an automated message. Please do not reply to this email.<br/><br/><br/>" +
+                       $"Thanks!";
+
+            _mailService.SendMail(email, subject, body);
+
+        }
+
+        public async Task<bool> VerifyLoginToken(string token)
+        {
+            var tokenEntry = await _userRepository.GetUserToken(token);
+
+            if (tokenEntry == null || tokenEntry.ExpirationTime < DateTime.Now)
+            {
+                return false;
+            }
+
+            tokenEntry.IsActive = true;
+            await _userRepository.UpdateUserToken(tokenEntry);
+
+            return true;
+        }
+
+        public async Task<TokenModel> LoginByToken(string token)
+        {
+            return await _userRepository.LoginByToken(token);
+        }
+
     }
 }
